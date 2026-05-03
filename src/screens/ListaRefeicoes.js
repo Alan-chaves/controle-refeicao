@@ -1,5 +1,6 @@
 import {
   Alert,
+  Platform,
   View,
   Text,
   FlatList,
@@ -37,6 +38,18 @@ export default function ListaRefeicoes() {
   }
 
   function confirmarExclusao(item) {
+    if (Platform.OS === "web") {
+      const confirmou = window.confirm(
+        `Deseja remover "${item.nome}" da lista?`
+      );
+
+      if (confirmou) {
+        excluir(item.id);
+      }
+
+      return;
+    }
+
     Alert.alert(
       "Excluir refeicao",
       `Deseja remover "${item.nome}" da lista?`,
