@@ -1,4 +1,5 @@
 import {
+  Alert,
   View,
   Text,
   FlatList,
@@ -6,7 +7,9 @@ import {
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { getRefeicoes, salvarRefeicoes } from "../storage/refeicoes";
+import { Trash2 } from "lucide-react-native";
+import { getRefeicoes, removeRefeicao } from "../storage/refeicoes";
+import { layout } from "../styles/layout";
 
 export default function ListaRefeicoes() {
   const navigation = useNavigation();
@@ -23,20 +26,40 @@ export default function ListaRefeicoes() {
     }, [])
   );
 
-  // 🔥 EXCLUIR (SEM ALERT PARA FUNCIONAR 100%)
   async function excluir(id) {
-    const dados = await getRefeicoes();
-    const novaLista = dados.filter((item) => item.id !== id);
+    try {
+      await removeRefeicao(id);
+      const dadosAtualizados = await getRefeicoes();
+      setLista(dadosAtualizados);
+    } catch (error) {
+      Alert.alert("Erro", "Nao foi possivel excluir a refeicao.");
+    }
+  }
 
-    await salvarRefeicoes(novaLista);
-    setLista(novaLista);
+  function confirmarExclusao(item) {
+    Alert.alert(
+      "Excluir refeicao",
+      `Deseja remover "${item.nome}" da lista?`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: () => excluir(item.id),
+        },
+      ]
+    );
   }
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      
+    <View style={layout.screen}>
       <FlatList
         data={lista}
+        style={layout.content}
+        contentContainerStyle={{ paddingBottom: 20 }}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View
@@ -66,9 +89,17 @@ export default function ListaRefeicoes() {
               </Text>
             </TouchableOpacity>
 
-            {/* LIXEIRA FUNCIONANDO */}
-            <TouchableOpacity onPress={() => excluir(item.id)}>
-              <Text style={{ color: "red", fontSize: 20 }}>🗑️</Text>
+            <TouchableOpacity
+              onPress={() => confirmarExclusao(item)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                marginLeft: 12,
+                backgroundColor: "#FDECEC",
+                padding: 8,
+                borderRadius: 8,
+              }}
+            >
+              <Trash2 color="#D62828" size={18} />
             </TouchableOpacity>
           </View>
         )}

@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { layout } from "../styles/layout";
 
 export default function Feedback() {
   const route = useRoute();
@@ -7,14 +8,16 @@ export default function Feedback() {
   const { dentro } = route.params;
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 20 }}>
-        {dentro ? "Dentro da dieta ✅" : "Fora da dieta ❌"}
-      </Text>
+    <View style={layout.centeredScreen}>
+      <View style={layout.content}>
+        <Text style={{ fontSize: 20, textAlign: "center" }}>
+          {dentro ? "Dentro da dieta ✅" : "Fora da dieta ❌"}
+        </Text>
 
-      <TouchableOpacity onPress={() => navigation.navigate("home")}>
-        <Text style={{ marginTop: 20 }}>Voltar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("home")}>
+          <Text style={{ marginTop: 20, textAlign: "center" }}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
