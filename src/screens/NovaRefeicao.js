@@ -2,6 +2,9 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
+// ⚠️ IMPORTA SUA FUNÇÃO DE SALVAR
+import { addRefeicao } from "../storage/refeicoes";
+
 export default function NovaRefeicao() {
   const navigation = useNavigation();
 
@@ -9,8 +12,17 @@ export default function NovaRefeicao() {
   const [descricao, setDescricao] = useState("");
   const [dentro, setDentro] = useState(true);
 
-  function salvar() {
-    // aqui você pode integrar com seu storage depois
+  async function salvar() {
+    if (!nome || !descricao) return;
+
+    await addRefeicao({
+      id: Date.now().toString(),
+      nome,
+      descricao,
+      dentro,
+      data: new Date().toLocaleDateString("pt-BR"),
+    });
+
     navigation.goBack();
   }
 
@@ -70,7 +82,7 @@ export default function NovaRefeicao() {
         <Text style={{ color: "#fff" }}>Fora da dieta</Text>
       </TouchableOpacity>
 
-      {/* BOTÃO SALVAR */}
+      {/* SALVAR */}
       <TouchableOpacity
         onPress={salvar}
         style={{
@@ -84,7 +96,7 @@ export default function NovaRefeicao() {
         </Text>
       </TouchableOpacity>
 
-      {/* BOTÃO CANCELAR */}
+      {/* CANCELAR */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={{
